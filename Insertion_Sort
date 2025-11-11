@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+// Function to perform insertion sort
+void insertionSort(int a[], int n) {
+    int i, j, key, k;
+
+    for(i = 1; i < n; i++) {
+        key = a[i];
+        // Use for loop instead of while
+        for(j = i - 1; j >= 0 && a[j] > key; j--) {
+            a[j + 1] = a[j];
+        }
+        a[j + 1] = key;
+
+        // Display array after each pass
+        printf("Pass %d: ", i);
+        for(k = 0; k < n; k++)
+            printf("%d ", a[k]);
+        printf("\n");
+    }
+}
+
+int main() {
+    int a[5], n = 5, i;
+
+    // Input elements
+    printf("Enter 5 elements:\n");
+    for(i = 0; i < n; i++)
+        scanf("%d", &a[i]);
+
+    // Call the sort function
+    insertionSort(a, n);
+
+    // Display final sorted array
+    printf("\nSorted array: ");
+    for(i = 0; i < n; i++)
+        printf("%d ", a[i]);
+
+    return 0;
+}
