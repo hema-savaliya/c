@@ -1,0 +1,209 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+};
+
+struct Node *head = NULL;
+
+// Insert at front
+void insertFront(int value) {
+    struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = head;
+    head = newNode;
+    printf("Inserted %d at front.\n", value);
+}
+
+// Insert at end
+void insertEnd(int value) {
+    struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL)
+            temp = temp->next;
+        temp->next = newNode;
+    }
+
+    printf("Inserted %d at end.\n", value);
+}
+
+// Insert in sorted ascending order
+void insertSorted(int value) {
+    struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL;
+
+    if (head == NULL || value < head->data) {
+        newNode->next = head;
+        head = newNode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL && temp->next->data < value)
+            temp = temp->next;
+
+        newNode->next = temp->next;
+        temp->next = newNode;
+    }
+
+    printf("Inserted %d in sorted order.\n", value);
+}
+
+// Delete first node
+void deleteFirst() {
+    if (head == NULL) {
+        printf("List is empty!\n");
+        return;
+    }
+    struct Node *temp = head;
+    head = head->next;
+    printf("Deleted first node: %d\n", temp->data);
+    free(temp);
+}
+
+// Delete node with given value
+void deleteValue(int value) {
+    if (head == NULL) {
+        printf("List is empty!\n");
+        return;
+    }
+
+    struct Node *temp = head, *prev = NULL;
+
+    if (head->data == value) {  // first node
+        head = head->next;
+        printf("Deleted node with value %d\n", value);
+        free(temp);
+        return;
+    }
+
+    while (temp != NULL && temp->data != value) {
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Value not found!\n");
+        return;
+    }
+
+    prev->next = temp->next;
+    printf("Deleted node with value %d\n", value);
+    free(temp);
+}
+
+// Delete node after a position
+void deleteAfter(int pos) {
+    if (head == NULL) {
+        printf("List is empty!\n");
+        return;
+    }
+
+    struct Node *temp = head;
+    int i;
+
+    for (i = 1; i < pos && temp != NULL; i++)
+        temp = temp->next;
+
+    if (temp == NULL || temp->next == NULL) {
+        printf("No node exists after position %d\n", pos);
+        return;
+    }
+
+    struct Node *del = temp->next;
+    temp->next = del->next;
+    printf("Deleted node after position %d: %d\n", pos, del->data);
+    free(del);
+}
+
+// Display list
+void display() {
+    if (head == NULL) {
+        printf("List is empty!\n");
+        return;
+    }
+
+    struct Node *temp = head;
+    printf("Linked List: ");
+    while (temp != NULL) {
+        printf("%d -> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+// Main menu
+int main() {
+    int choice, value, pos;
+
+    do {
+        printf("\n----- MENU -----\n");
+        printf("1. Insert at Front\n");
+        printf("2. Insert at End\n");
+        printf("3. Insert in Sorted Order\n");
+        printf("4. Delete First Node\n");
+        printf("5. Delete by Value\n");
+        printf("6. Delete After Position\n");
+        printf("7. Display List\n");
+        printf("0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                insertFront(value);
+                break;
+
+            case 2:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                insertEnd(value);
+                break;
+
+            case 3:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                insertSorted(value);
+                break;
+
+            case 4:
+                deleteFirst();
+                break;
+
+            case 5:
+                printf("Enter value to delete: ");
+                scanf("%d", &value);
+                deleteValue(value);
+                break;
+
+            case 6:
+                printf("Enter position: ");
+                scanf("%d", &pos);
+                deleteAfter(pos);
+                break;
+
+            case 7:
+                display();
+                break;
+
+            case 0:
+                printf("Exiting program...\n");
+                break;
+
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+
+    } while (choice != 0);
+
+    return 0;
+}
