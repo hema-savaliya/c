@@ -1,0 +1,209 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node *lptr, *rptr;
+};
+
+struct node *Header;
+
+// Function prototypes
+void Insert(struct node *h, int x);
+void Preorder(struct node *t);
+void Inorder(struct node *t);
+void Postorder(struct node *t);
+void Delete(struct node *h, int x);
+
+int main() {
+    int ch, x;
+
+    // Create header node
+    Header = (struct node *)malloc(sizeof(struct node));
+    Header->lptr = Header;
+    Header->rptr = Header;
+
+    do {
+        printf("\n===== BINARY SEARCH TREE MENU =====");
+        printf("\n1. Insert Node");
+        printf("\n2. Preorder Traversal");
+        printf("\n3. Postorder Traversal");
+        printf("\n4. Inorder Traversal");
+        printf("\n5. Delete Node");
+        printf("\n6. Exit");
+        printf("\nEnter your choice: ");
+        scanf("%d", &ch);
+
+        switch (ch) {
+            case 1:
+                printf("Enter value to insert: ");
+                scanf("%d", &x);
+                Insert(Header, x);
+                printf("\nInorder Traversal: ");
+                Inorder(Header->lptr);
+                break;
+
+            case 2:
+                printf("\nPreorder Traversal:\n");
+                Preorder(Header->lptr);
+                break;
+
+            case 3:
+                printf("\nPostorder Traversal:\n");
+                Postorder(Header->lptr);
+                break;
+
+            case 4:
+                printf("\nInorder Traversal:\n");
+                Inorder(Header->lptr);
+                break;
+
+            case 5:
+                printf("Enter value to delete: ");
+                scanf("%d", &x);
+                Delete(Header, x);
+                break;
+
+            case 6:
+                exit(0);
+
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    } while (1);
+
+    return 0;
+}
+
+
+// ================= INSERT ====================
+void Insert(struct node *h, int x) {
+    struct node *New, *cur, *parent;
+
+    New = (struct node *)malloc(sizeof(struct node));
+    New->data = x;
+    New->lptr = New->rptr = NULL;
+
+    if (h->lptr == h) {   // First node
+        h->lptr = New;
+        return;
+    }
+
+    cur = h->lptr;
+    parent = h;
+
+    while (cur != NULL) {
+        parent = cur;
+
+        if (x < cur->data)
+            cur = cur->lptr;
+        else if (x > cur->data)
+            cur = cur->rptr;
+        else {
+            printf("\nElement already exists!");
+            free(New);
+            return;
+        }
+    }
+
+    if (x < parent->data)
+        parent->lptr = New;
+    else
+        parent->rptr = New;
+}
+
+
+// ================== TRAVERSALS ==================
+void Preorder(struct node *t) {
+    if (t == NULL)
+        return;
+
+    printf("%d ", t->data);
+    Preorder(t->lptr);
+    Preorder(t->rptr);
+}
+
+void Inorder(struct node *t) {
+    if (t == NULL)
+        return;
+
+    Inorder(t->lptr);
+    printf("%d ", t->data);
+    Inorder(t->rptr);
+}
+
+void Postorder(struct node *t) {
+    if (t == NULL)
+        return;
+
+    Postorder(t->lptr);
+    Postorder(t->rptr);
+    printf("%d ", t->data);
+}
+
+
+// =================== DELETE ======================
+void Delete(struct node *h, int x) {
+    struct node *cur, *parent, *suc, *pred, *q;
+    char side = 'L';
+
+    if (h->lptr == h) {
+        printf("Tree is empty!");
+        return;
+    }
+
+    cur = h->lptr;
+    parent = h;
+
+    // Search node
+    while (cur != NULL && cur->data != x) {
+        parent = cur;
+
+        if (x < cur->data) {
+            cur = cur->lptr;
+            side = 'L';
+        } else {
+            cur = cur->rptr;
+            side = 'R';
+        }
+    }
+
+    if (cur == NULL) {
+        printf("\nNode not found!");
+        return;
+    }
+
+    // Case 1: Only right child
+    if (cur->lptr == NULL)
+        q = cur->rptr;
+
+    // Case 2: Only left child
+    else if (cur->rptr == NULL)
+        q = cur->lptr;
+
+    // Case 3: Two children
+    else {
+        suc = cur->rptr;
+        pred = cur;
+
+        while (suc->lptr != NULL) {
+            pred = suc;
+            suc = suc->lptr;
+        }
+
+        if (pred != cur)
+            pred->lptr = suc->rptr;
+
+        suc->lptr = cur->lptr;
+        suc->rptr = cur->rptr;
+        q = suc;
+    }
+
+    if (side == 'L')
+        parent->lptr = q;
+    else
+        parent->rptr = q;
+
+    printf("\n%d deleted.", x);
+    free(cur);
+}
